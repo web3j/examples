@@ -41,24 +41,24 @@ public class Main {
         new Main().run();
     }
 
-    private void simpleFilterExample() throws Exception {
+    void simpleFilterExample() throws Exception {
 
         Subscription subscription = web3j.blockObservable(false).subscribe(block -> {
-            System.out.println("Sweet, block number " + block.getBlock().get().getNumber() + " has just been created");
+            System.out.println("Sweet, block number " + block.getBlock().getNumber() + " has just been created");
         }, Throwable::printStackTrace);
 
         TimeUnit.MINUTES.sleep(2);
         subscription.unsubscribe();
     }
 
-    private void blockInfoExample() throws Exception {
+    void blockInfoExample() throws Exception {
         CountDownLatch countDownLatch = new CountDownLatch(1);
 
         System.out.println("Waiting for " + COUNT + " transactions...");
         Subscription subscription = web3j.blockObservable(true)
                 .take(COUNT)
                 .subscribe(ethBlock -> {
-                    EthBlock.Block block = ethBlock.getBlock().get();
+                    EthBlock.Block block = ethBlock.getBlock();
                     LocalDateTime timestamp = Instant.ofEpochSecond(
                             block.getTimestamp().longValueExact()).atZone(ZoneId.of("UTC")).toLocalDateTime();
                     int transactionCount = block.getTransactions().size();
@@ -78,7 +78,7 @@ public class Main {
         subscription.unsubscribe();
     }
 
-    private void countingEtherExample() throws Exception {
+    void countingEtherExample() throws Exception {
         CountDownLatch countDownLatch = new CountDownLatch(1);
 
         System.out.println("Waiting for " + COUNT + " transactions...");
@@ -97,7 +97,7 @@ public class Main {
         subscription.unsubscribe();
     }
 
-    private void clientVersionExample() throws Exception {
+    void clientVersionExample() throws Exception {
         CountDownLatch countDownLatch = new CountDownLatch(1);
 
         Subscription subscription = web3j.web3ClientVersion().observable().subscribe(x -> {
