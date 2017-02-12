@@ -79,7 +79,7 @@ public class Main {
     }
 
     void countingEtherExample() throws Exception {
-        CountDownLatch countDownLatch = new CountDownLatch(1);
+        CountDownLatch countDownLatch = new CountDownLatch(COUNT);
 
         System.out.println("Waiting for " + COUNT + " transactions...");
         Observable<BigInteger> transactionValue = web3j.transactionObservable()
