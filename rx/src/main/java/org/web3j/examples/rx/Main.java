@@ -52,7 +52,7 @@ public class Main {
     }
 
     void blockInfoExample() throws Exception {
-        CountDownLatch countDownLatch = new CountDownLatch(1);
+        CountDownLatch countDownLatch = new CountDownLatch(COUNT);
 
         System.out.println("Waiting for " + COUNT + " transactions...");
         Subscription subscription = web3j.blockObservable(true)
@@ -79,7 +79,7 @@ public class Main {
     }
 
     void countingEtherExample() throws Exception {
-        CountDownLatch countDownLatch = new CountDownLatch(COUNT);
+        CountDownLatch countDownLatch = new CountDownLatch(1);
 
         System.out.println("Waiting for " + COUNT + " transactions...");
         Observable<BigInteger> transactionValue = web3j.transactionObservable()
@@ -88,8 +88,9 @@ public class Main {
                 .reduce(BigInteger.ZERO, BigInteger::add);
 
         Subscription subscription = transactionValue.subscribe(total -> {
+            BigDecimal value = new BigDecimal(total);
             System.out.println("Transaction value: " +
-                    Convert.fromWei(new BigDecimal(total), Convert.Unit.ETHER) + " Ether");
+                    Convert.fromWei(value, Convert.Unit.ETHER) + " Ether (" +  value + " Wei)");
             countDownLatch.countDown();
         }, Throwable::printStackTrace);
 
