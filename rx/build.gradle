@@ -10,6 +10,6 @@ repositories {
 }
 
 dependencies {
-    compile 'org.web3j:core:2.0.0'
+    compile 'org.web3j:core:2.0.1'
     testCompile 'junit:junit:4.11'
 }
