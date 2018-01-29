@@ -8,6 +8,8 @@ import java.time.ZoneId;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import rx.Observable;
 import rx.Subscription;
 
@@ -24,6 +26,8 @@ public class Main {
 
     private static final int COUNT = 10;
 
+    private static Logger log = LoggerFactory.getLogger(Main.class);
+
     private final Web3j web3j;
 
     public Main() {
@@ -35,6 +39,7 @@ public class Main {
         blockInfoExample();
         countingEtherExample();
         clientVersionExample();
+        System.exit(0);  // we explicitly call the exit to clean up our ScheduledThreadPoolExecutor used by web3j
     }
 
     public static void main(String[] args) throws Exception {
@@ -44,7 +49,8 @@ public class Main {
     void simpleFilterExample() throws Exception {
 
         Subscription subscription = web3j.blockObservable(false).subscribe(block -> {
-            System.out.println("Sweet, block number " + block.getBlock().getNumber() + " has just been created");
+            log.info("Sweet, block number " + block.getBlock().getNumber()
+                    + " has just been created");
         }, Throwable::printStackTrace);
 
         TimeUnit.MINUTES.sleep(2);
@@ -54,18 +60,19 @@ public class Main {
     void blockInfoExample() throws Exception {
         CountDownLatch countDownLatch = new CountDownLatch(COUNT);
 
-        System.out.println("Waiting for " + COUNT + " transactions...");
+        log.info("Waiting for " + COUNT + " transactions...");
         Subscription subscription = web3j.blockObservable(true)
                 .take(COUNT)
                 .subscribe(ethBlock -> {
                     EthBlock.Block block = ethBlock.getBlock();
                     LocalDateTime timestamp = Instant.ofEpochSecond(
-                            block.getTimestamp().longValueExact()).atZone(ZoneId.of("UTC")).toLocalDateTime();
+                            block.getTimestamp()
+                                    .longValueExact()).atZone(ZoneId.of("UTC")).toLocalDateTime();
                     int transactionCount = block.getTransactions().size();
                     String hash = block.getHash();
                     String parentHash = block.getParentHash();
 
-                    System.out.println(
+                    log.info(
                             timestamp + " " +
                                     "Tx count: " + transactionCount + ", " +
                                     "Hash: " + hash + ", " +
@@ -81,7 +88,7 @@ public class Main {
     void countingEtherExample() throws Exception {
         CountDownLatch countDownLatch = new CountDownLatch(1);
 
-        System.out.println("Waiting for " + COUNT + " transactions...");
+        log.info("Waiting for " + COUNT + " transactions...");
         Observable<BigInteger> transactionValue = web3j.transactionObservable()
                 .take(COUNT)
                 .map(Transaction::getValue)
@@ -89,7 +96,7 @@ public class Main {
 
         Subscription subscription = transactionValue.subscribe(total -> {
             BigDecimal value = new BigDecimal(total);
-            System.out.println("Transaction value: " +
+            log.info("Transaction value: " +
                     Convert.fromWei(value, Convert.Unit.ETHER) + " Ether (" +  value + " Wei)");
             countDownLatch.countDown();
         }, Throwable::printStackTrace);
@@ -102,7 +109,7 @@ public class Main {
         CountDownLatch countDownLatch = new CountDownLatch(1);
 
         Subscription subscription = web3j.web3ClientVersion().observable().subscribe(x -> {
-            System.out.println(x.getWeb3ClientVersion());
+            log.info("Client is running version: {}", x.getWeb3ClientVersion());
             countDownLatch.countDown();
         });
 
