@@ -24,7 +24,8 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 dependencies {
-    compile 'org.web3j:web3j-spring-boot-starter:1.0.0'
+    compile 'org.web3j:web3j-spring-boot-starter:1.0.0',
+            'org.springframework.boot:spring-boot-starter-web:2.7.3'
     testCompile 'junit:junit',
             'org.springframework.boot:spring-boot-starter-test:1.5.1.RELEASE'
 }
